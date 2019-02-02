@@ -4,7 +4,7 @@ import (
 	"bufio"
 	"fmt"
 
-	"gitlab.appsflyer.com/Architecture/af-logger-go/event"
+	"github.com/yorikya/go-logger/event"
 )
 
 const ()

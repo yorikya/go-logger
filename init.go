@@ -1,6 +1,6 @@
 package logger
 
-import "gitlab.appsflyer.com/Architecture/af-logger-go/impl"
+import "github.com/yorikya/go-logger/impl"
 
 var (
 	defaultLoggerFactory LoggerFactory

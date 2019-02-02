@@ -1,8 +1,8 @@
 package filters
 
 import (
-	"gitlab.appsflyer.com/Architecture/af-logger-go/event"
-	"gitlab.appsflyer.com/Architecture/af-logger-go/level"
+	"github.com/yorikya/go-logger/event"
+	"github.com/yorikya/go-logger/level"
 )
 
 type Filter interface {

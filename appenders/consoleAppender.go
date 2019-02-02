@@ -1,8 +1,8 @@
 package appenders
 
 import (
-	"gitlab.appsflyer.com/Architecture/af-logger-go/encoders"
-	"gitlab.appsflyer.com/Architecture/af-logger-go/event"
+	"github.com/yorikya/go-logger/encoders"
+	"github.com/yorikya/go-logger/event"
 )
 
 type ConsoleAppender struct {

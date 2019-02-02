@@ -4,7 +4,7 @@ import (
 	"sync"
 	"time"
 
-	"gitlab.appsflyer.com/Architecture/af-logger-go/level"
+	"github.com/yorikya/go-logger/level"
 )
 
 const (

@@ -9,12 +9,12 @@ import (
 	"strings"
 	"time"
 
-	"gitlab.appsflyer.com/Architecture/af-logger-go/appenders"
-	"gitlab.appsflyer.com/Architecture/af-logger-go/encoders"
-	"gitlab.appsflyer.com/Architecture/af-logger-go/event"
-	"gitlab.appsflyer.com/Architecture/af-logger-go/filters"
-	"gitlab.appsflyer.com/Architecture/af-logger-go/level"
-	"gitlab.appsflyer.com/Architecture/af-logger-go/mdc"
+	"github.com/yorikya/go-logger/appenders"
+	"github.com/yorikya/go-logger/encoders"
+	"github.com/yorikya/go-logger/event"
+	"github.com/yorikya/go-logger/filters"
+	"github.com/yorikya/go-logger/level"
+	"github.com/yorikya/go-logger/mdc"
 )
 
 const (
