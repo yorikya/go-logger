@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/yorikya/go-logger/event"
+	"github.com/yorikya/go-logger/flags"
 )
 
 const ()
@@ -16,12 +17,14 @@ type Encoder interface {
 type RowEncoder struct {
 	out        *bufio.Writer
 	timeFormat string
+	withLevel  bool
 }
 
 func NewRowEncoder(w *bufio.Writer) *RowEncoder {
 	e := RowEncoder{
 		out:        w,
 		timeFormat: "15:04:05.000",
+		withLevel:  true,
 	}
 	return &e
 }
@@ -37,11 +40,24 @@ func (enc *RowEncoder) appendElementVal(val string) {
 }
 
 func (enc *RowEncoder) appendHeader(evt event.Event) {
-	enc.appendElement(evt.GetTimestamp().Format(enc.timeFormat))
-	enc.appendElement(evt.GetLevel().String())
-	enc.appendElement(evt.GetCaller())
-	enc.appendElement(evt.GetLoggerName())
+	if evt.ContainFlag(flags.Ftimestamp) {
+		enc.appendElement(evt.GetTimestamp().Format(enc.timeFormat))
+	}
+
+	if enc.withLevel {
+		enc.appendElement(evt.GetLevel().String())
+	}
+
+	if evt.ContainFlag(flags.Fcaller) {
+		enc.appendElement(evt.GetCaller())
+	}
+
+	if evt.ContainFlag(flags.FLoggername) {
+		enc.appendElement(evt.GetLoggerName())
+	}
+
 	enc.appendElementVal(evt.GetMessage())
+
 }
 
 func (enc *RowEncoder) Encode(evt event.Event) {

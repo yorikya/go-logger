@@ -24,17 +24,13 @@ func assertEqual(t *testing.T, expect, current interface{}) {
 	}
 }
 
-func printTest(log Logger) {
-	log.Debug("printTest function!!!!")
-}
-
 func TestDefaultInit(t *testing.T) {
 	log := GetLogger("ROOT")
 
 	log.Debug("Test Message")
 
-	for i := 1; i <= 100; i++ {
-		go printTest(log)
-	}
+}
+
+func TestIota(t *testing.T) {
 
 }

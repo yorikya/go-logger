@@ -13,17 +13,13 @@ import (
 	"github.com/yorikya/go-logger/encoders"
 	"github.com/yorikya/go-logger/event"
 	"github.com/yorikya/go-logger/filters"
+	"github.com/yorikya/go-logger/flags"
 	"github.com/yorikya/go-logger/level"
 	"github.com/yorikya/go-logger/mdc"
 )
 
 const (
-	Fcaller = 1 << iota
-	Ftimestamp
-	Fshortfile
-	FLoggername
-
-	FBasicLoggerFlags = Fcaller | Ftimestamp | Fshortfile | FLoggername
+	FBasicLoggerFlags = flags.Fcaller | flags.Ftimestamp | flags.Fshortfile | flags.FLoggername
 )
 
 type BasicLogger struct {
@@ -68,27 +64,22 @@ func getCaller(skip int, shortFileName bool) string {
 	return b.String()
 }
 
-func (l *BasicLogger) containFlag(featureFlag int) bool {
-	return l.flags&Ftimestamp != 0
-}
-
 func (l *BasicLogger) enrichEvent(e event.Event) {
-	switch {
-	case l.containFlag(Ftimestamp):
+	if e.ContainFlag(flags.Ftimestamp) {
 		e.SetTimestamp(time.Now())
-		fallthrough
+	}
 
-	case l.containFlag(Fcaller):
-		e.SetCaller(getCaller(4, l.containFlag(Fshortfile))) //Skip 4 depth levels, to get orig caller
-		fallthrough
+	if e.ContainFlag(flags.Fcaller) {
+		e.SetCaller(getCaller(4, e.ContainFlag(flags.Fshortfile))) //Skip 4 depth levels, to get orig caller
+	}
 
-	case l.containFlag(FLoggername):
+	if e.ContainFlag(flags.FLoggername) {
 		e.SetLoggerName(l.name)
 	}
 }
 
 func (l *BasicLogger) appendLogEvent(lvl level.Level, msg string) {
-	e := event.NewBasicLogEvent(lvl, msg)
+	e := event.NewBasicLogEvent(lvl, msg, l.flags)
 	defer event.ReleaseLogEvent(e)
 
 	if !l.filter.Enabled(e) {

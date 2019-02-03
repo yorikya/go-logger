@@ -27,6 +27,7 @@ type ILogEvent interface {
 	SetTimestamp(time.Time)
 	SetCaller(string)
 	SetLoggerName(string)
+	ContainFlag(int) bool
 }
 
 // ### Implementations
@@ -42,9 +43,11 @@ type LogEvent struct {
 	caller string
 	//Top level logger name
 	loggerName string
+	//Flags of root logger
+	flags int
 }
 
-func NewBasicLogEvent(lvl level.Level, msg string) *LogEvent {
+func NewBasicLogEvent(lvl level.Level, msg string, flags int) *LogEvent {
 	var newEvt *LogEvent
 	if poolEvent := eventPool.Get(); poolEvent != nil {
 		newEvt = poolEvent.(*LogEvent)
@@ -54,6 +57,7 @@ func NewBasicLogEvent(lvl level.Level, msg string) *LogEvent {
 	// Basic log Event fields
 	newEvt.setLevel(lvl)
 	newEvt.setMessage(msg)
+	newEvt.setFlags(flags)
 
 	return newEvt
 }
@@ -82,6 +86,10 @@ func (e *LogEvent) SetCaller(caller string) {
 	e.caller = caller
 }
 
+func (e *LogEvent) setFlags(flags int) {
+	e.flags = flags
+}
+
 func (e *LogEvent) SetLoggerName(name string) {
 	e.loggerName = name
 }
@@ -100,4 +108,12 @@ func (e *LogEvent) GetTimestamp() time.Time {
 
 func (e *LogEvent) GetCaller() string {
 	return e.caller
+}
+
+func (e *LogEvent) GetFlags() int {
+	return e.flags
+}
+
+func (e *LogEvent) ContainFlag(flag int) bool {
+	return e.flags&flag != 0
 }
