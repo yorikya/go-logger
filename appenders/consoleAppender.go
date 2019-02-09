@@ -1,3 +1,7 @@
+/*
+Package appenders | ConsoleAppender
+ConsoleAppender write logger event to console, with given encoder style.
+*/
 package appenders
 
 import (
@@ -5,17 +9,21 @@ import (
 	"github.com/yorikya/go-logger/event"
 )
 
+//ConsoleAppender implements Appender interface
 type ConsoleAppender struct {
-	encoder encoders.Encoder
+	//encoder console encoder
+	encoder encoders.IEncoder
 }
 
-func NewConsoleAppender(enc encoders.Encoder) *ConsoleAppender {
+//NewConsoleAppender return a new ConsoleAppender with encoder.
+func NewConsoleAppender(enc encoders.IEncoder) *ConsoleAppender {
 	c := ConsoleAppender{
 		encoder: enc,
 	}
 	return &c
 }
 
+//DoAppend encode an incoming event with own encoder.
 func (a *ConsoleAppender) DoAppend(e event.Event) {
 	a.encoder.Encode(e)
 }

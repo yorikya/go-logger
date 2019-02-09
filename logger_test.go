@@ -30,7 +30,3 @@ func TestDefaultInit(t *testing.T) {
 	log.Debug("Test Message")
 
 }
-
-func TestIota(t *testing.T) {
-
-}

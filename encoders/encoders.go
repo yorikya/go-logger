@@ -1,3 +1,7 @@
+/*
+Package encoders contain interfaces and simple implementation for logger encoders
+Logger use encoders to encode and stream data to particular stream out.
+*/
 package encoders
 
 import (
@@ -8,18 +12,24 @@ import (
 	"github.com/yorikya/go-logger/flags"
 )
 
-const ()
-
-type Encoder interface {
+//IEncoder interface for encode an incoming event.
+type IEncoder interface {
+	// Encode an incoming event to string and stream to encoder out
 	Encode(event.Event)
 }
 
+//RowEncoder implements IEncoder interface
 type RowEncoder struct {
-	out        *bufio.Writer
+	//out RowEncoder stream out
+	out *bufio.Writer
+	// timeFormat row time format
 	timeFormat string
-	withLevel  bool
+	// withLevel append to an incoming event level
+	withLevel bool
 }
 
+//NewRowEncoder return an new RowEncoder
+//Note: Get a bufio.Writer as an argument
 func NewRowEncoder(w *bufio.Writer) *RowEncoder {
 	e := RowEncoder{
 		out:        w,
@@ -29,16 +39,19 @@ func NewRowEncoder(w *bufio.Writer) *RowEncoder {
 	return &e
 }
 
+//appendElement wrap a argument val with square parenthesis.
 func (enc *RowEncoder) appendElement(val string) {
 	enc.out.WriteByte('[')
 	enc.appendElementVal(val)
 	enc.out.WriteByte(']')
 }
 
+//appendElementVal writes a value given as an argument to encoder out
 func (enc *RowEncoder) appendElementVal(val string) {
 	fmt.Fprintf(enc.out, "%s", val)
 }
 
+//appendHeader append event header according to event flags.
 func (enc *RowEncoder) appendHeader(evt event.Event) {
 	if evt.ContainFlag(flags.Ftimestamp) {
 		enc.appendElement(evt.GetTimestamp().Format(enc.timeFormat))
@@ -60,10 +73,9 @@ func (enc *RowEncoder) appendHeader(evt event.Event) {
 
 }
 
+//Encode encode event to string and stream to encoder out
 func (enc *RowEncoder) Encode(evt event.Event) {
 	enc.appendHeader(evt)
 
-	enc.out.WriteByte('\n')
 	enc.out.Flush()
-
 }
