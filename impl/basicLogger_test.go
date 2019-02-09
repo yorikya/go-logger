@@ -1,36 +1,68 @@
 package impl
 
 import (
-	"bytes"
-	"io"
+	"bufio"
 	"os"
 	"testing"
 
 	"github.com/yorikya/go-logger/level"
 )
 
-func getStdout() (chan string, *os.File) {
-	r, w, _ := os.Pipe()
-	os.Stdout = w
+type stdoutCapture struct {
+	//out comunication out chan
+	out chan string
+	//readPipe read from file
+	readPipe,
+	//writePipe write to file
+	writePipe,
+	//origStdout holds original stdout file
+	origStdout *os.File
+}
 
-	outC := make(chan string)
-	// copy the output in a separate goroutine so printing can't block indefinitely
+func newStdoutCapture() *stdoutCapture {
+	readFile, writeFile, err := os.Pipe()
+	if err != nil {
+		println("**** error: ", err.Error())
+		return nil
+	}
+
+	c := &stdoutCapture{
+		out:        make(chan string),
+		readPipe:   readFile,
+		writePipe:  writeFile,
+		origStdout: os.Stdout,
+	}
+
 	go func() {
-		var buf bytes.Buffer
-		io.Copy(&buf, r)
-		outC <- buf.String()
+		scanner := bufio.NewScanner(readFile)
+		for scanner.Scan() {
+			c.out <- scanner.Text()
+		}
 	}()
 
-	return outC, w
+	return c
 }
-func TestDebugFamily(t *testing.T) {
-	old := os.Stdout
-	o, w := getStdout()
+
+func (c *stdoutCapture) getString() string {
+	return <-c.out
+}
+
+func (c *stdoutCapture) close() {
+	c.writePipe.Close()
+	os.Stdout = c.origStdout
+}
+
+func testOutput(out string, lvl level.Level, flags int) {
+
+}
+
+func TestDebug(t *testing.T) {
+	c := newStdoutCapture()
+	defer c.close()
+
 	l := NewConsoleLogger("Test", level.DebugLevel, FBasicLoggerFlags)
 	l.Debug("test message")
 
-	w.Close()
-	os.Stdout = old
-	println("This is my output", <-o)
+	s := c.getString()
 
 }
