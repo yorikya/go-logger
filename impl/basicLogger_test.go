@@ -50,38 +50,41 @@ func (c *stdoutCapture) getString() string {
 
 func (c *stdoutCapture) close() {
 	c.writePipe.Close()
+	close(c.out)
 	os.Stdout = c.origStdout
 }
 
-func testOutput(t *testing.T, out string, lvl level.Level, loggerFlags int, withLevel bool) {
-	if flags.ContainFlag(loggerFlags, flags.Ftimestamp) {
+func testOutput(t *testing.T, out string, lvl level.Level, logger *BasicLogger) {
+	if flags.ContainFlag(logger.getFlags(), flags.Ftimestamp) {
+		timeFmt := logger.getAppenders().GetAppender(0).GetEncoder().GetTimeFormat()
+		println("the time format:", timeFmt)
 		// enc.appendElement(evt.GetTimestamp().Format(enc.timeFormat))
 	}
 
-	if withLevel {
-		// enc.appendElement(evt.GetLevel().String())
-	}
+	// if withLevel {
+	// 	// enc.appendElement(evt.GetLevel().String())
+	// }
 
-	if flags.ContainFlag(loggerFlags, flags.Fcaller) {
-		getCaller(4, flags.ContainFlag(loggerFlags, flags.FshortFile))
-		// enc.appendElement(evt.GetCaller())
-	}
+	// if flags.ContainFlag(loggerFlags, flags.Fcaller) {
+	// 	getCaller(4, flags.ContainFlag(loggerFlags, flags.FshortFile))
+	// 	// enc.appendElement(evt.GetCaller())
+	// }
 
-	if flags.ContainFlag(loggerFlags, flags.FLoggername) {
-		// enc.appendElement(evt.GetLoggerName())
-	}
+	// if flags.ContainFlag(loggerFlags, flags.FLoggername) {
+	// 	// enc.appendElement(evt.GetLoggerName())
+	// }
 
-	//Test message
-	// enc.appendElementVal(evt.GetMessage())
+	// //Test message
+	// // enc.appendElementVal(evt.GetMessage())
 }
 
 func TestDebug(t *testing.T) {
-	// c := newStdoutCapture()
+	c := newStdoutCapture()
 	flags := FBasicLoggerFlags
 	// defer c.close()
 
 	l := NewConsoleLogger("Test", level.DebugLevel, flags)
 	l.Debug("test message")
-
-	// testOutput(t, c.getString(), level.DebugLevel, flags, true)
+	c.close()
+	testOutput(t, c.getString(), level.DebugLevel, l)
 }

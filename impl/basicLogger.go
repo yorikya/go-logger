@@ -88,6 +88,21 @@ func (l *BasicLogger) enrichEvent(e event.Event) {
 	}
 }
 
+// getName retrun logger name.
+func (l *BasicLogger) getName() string {
+	return l.name
+}
+
+// getFlags retrun logger flags.
+func (l *BasicLogger) getFlags() int {
+	return l.flags
+}
+
+// getAppenders retrun logger appenders.
+func (l *BasicLogger) getAppenders() appenders.IAppenders {
+	return l.appenders
+}
+
 //appendLogEvent Basci logger inner event appender mechnim.
 func (l *BasicLogger) appendLogEvent(lvl level.Level, msg string) {
 	e := event.NewBasicLogEvent(lvl, msg, l.flags)
@@ -114,4 +129,3 @@ func (l *BasicLogger) Debugf(format string, vargs ...interface{}) {
 func (l *BasicLogger) Debugln(msg string) {
 	l.appendLogEvent(level.DebugLevel, fmt.Sprintf(newLine, msg))
 }
-

@@ -16,6 +16,10 @@ import (
 type IEncoder interface {
 	// Encode an incoming event to string and stream to encoder out
 	Encode(event.Event)
+	//GetTimeFormat return as a string time format
+	GetTimeFormat() string
+	//GetWithLevel return true if encoder append level tag
+	GetWithLevel() bool
 }
 
 //RowEncoder implements IEncoder interface
@@ -37,6 +41,16 @@ func NewRowEncoder(w *bufio.Writer) *RowEncoder {
 		withLevel:  true,
 	}
 	return &e
+}
+
+//GetWithLevel return true if encoder configured to append log level.
+func (enc *RowEncoder) GetWithLevel() bool {
+	return enc.withLevel
+}
+
+// GetTimeFormat return time format as string
+func (enc *RowEncoder) GetTimeFormat() string {
+	return enc.timeFormat
 }
 
 //appendElement wrap a argument val with square parenthesis.

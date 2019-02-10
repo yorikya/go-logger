@@ -27,3 +27,9 @@ func NewConsoleAppender(enc encoders.IEncoder) *ConsoleAppender {
 func (a *ConsoleAppender) DoAppend(e event.Event) {
 	a.encoder.Encode(e)
 }
+
+//DoAppend encode an incoming event with own encoder.
+func (a *ConsoleAppender) GetEncoder() encoders.IEncoder {
+	return a.encoder
+}
+
