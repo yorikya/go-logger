@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"os"
 	"runtime"
+	"strings"
 	"testing"
 	"unicode"
 
@@ -71,6 +72,10 @@ func replaceDigit(source []rune, rep rune) string {
 	return string(res)
 }
 
+func replaceDigitWithD(source []rune) string {
+	return replaceDigit(source, 'D')
+}
+
 func wrapElement(s string) string {
 	return "[" + s + "]"
 }
@@ -81,43 +86,77 @@ func assertEqual(t *testing.T, expect, current interface{}) {
 		t.Errorf("test failed expect: <%v>, current: <%v>\nCaller: %s, Line: %d", expect, current, file, no)
 	}
 }
-func testOutput(t *testing.T, out string, lvl level.Level, logger *BasicLogger) {
+
+func assertTrue(t *testing.T, current interface{}) {
+	assertEqual(t, true, current)
+}
+
+func cutFirstElement(s string) string {
+	start := strings.IndexRune(s, '[')
+	end := strings.IndexRune(s, ']') + 1
+	return string([]rune(s)[start:end])
+}
+
+func testOutput(t *testing.T, msg, out string, lvl level.Level, logger *BasicLogger) {
 	var seek, timstampLen int
 	outRune := []rune(out)
+	//Test timestamp
 	if flags.ContainFlag(logger.getFlags(), flags.Ftimestamp) {
 		timeFmt := wrapElement(logger.getAppenders().GetAppender(0).GetEncoder().GetTimeFormat())
 		timstampLen = len(timeFmt)
-		seek = timstampLen
+
 		assertEqual(t,
-			replaceDigit([]rune(timeFmt), 'D'),
-			replaceDigit(outRune[0:timstampLen], 'D'))
+			replaceDigitWithD([]rune(timeFmt)),
+			replaceDigitWithD(outRune[seek:timstampLen]))
+		seek += timstampLen
 	}
-	println(seek)
-	// if withLevel {
-	// 	// enc.appendElement(evt.GetLevel().String())
-	// }
 
-	// if flags.ContainFlag(loggerFlags, flags.Fcaller) {
-	// 	getCaller(4, flags.ContainFlag(loggerFlags, flags.FshortFile))
-	// 	// enc.appendElement(evt.GetCaller())
-	// }
+	//Test log level
+	if logger.getAppenders().GetAppender(0).GetEncoder().GetWithLevel() {
+		levelFmt := wrapElement(lvl.String())
+		levelLen := len(levelFmt)
 
-	// if flags.ContainFlag(loggerFlags, flags.FLoggername) {
-	// 	// enc.appendElement(evt.GetLoggerName())
-	// }
+		assertEqual(t, levelFmt, string(outRune[seek:seek+levelLen]))
+		seek += levelLen
+	}
 
-	// //Test message
-	// // enc.appendElementVal(evt.GetMessage())
+	//Test caller
+	if flags.ContainFlag(logger.getFlags(), flags.Fcaller) {
+		caller := cutFirstElement(string(outRune[seek:]))
+		callerLen := len(caller)
+		assertTrue(t, callerLen > 2)
+
+		assertTrue(t, strings.Contains(caller, ".go"))
+
+		if !flags.ContainFlag(logger.getFlags(), flags.FshortFile) {
+			assertTrue(t, strings.Contains(caller, "/"))
+		}
+
+		seek += callerLen
+	}
+
+	//Test logger name
+	if flags.ContainFlag(logger.getFlags(), flags.FLoggername) {
+		name := wrapElement(logger.getName())
+		nameLen := len(name)
+		assertEqual(t, name, string(outRune[seek:seek+nameLen]))
+
+		seek += nameLen
+	}
+
+	//Test message
+	assertEqual(t, msg, string(outRune[seek:]))
 }
 
 func TestDebug(t *testing.T) {
 	c := newStdoutCapture()
 	flags := FBasicLoggerFlags
+	msg := "test message"
 	// defer c.close()
 
 	l := NewConsoleLogger("Test", level.DebugLevel, flags)
-	l.Debug("test message")
+	l.Debug(msg)
 
 	c.close()
-	testOutput(t, c.getString(), level.DebugLevel, l)
+	testOutput(t, msg, c.getString(), level.DebugLevel, l)
 }
