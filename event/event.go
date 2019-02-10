@@ -8,6 +8,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/yorikya/go-logger/flags"
 	"github.com/yorikya/go-logger/level"
 )
 
@@ -142,5 +143,5 @@ func (e *LogEvent) GetFlags() int {
 
 // ContainFlag interface function implementation
 func (e *LogEvent) ContainFlag(flag int) bool {
-	return e.flags&flag != 0
+	return flags.ContainFlag(e.flags, flag)
 }

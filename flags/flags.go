@@ -14,3 +14,8 @@ const (
 	//FLoggername logger nme flag. Append logger name to an event.
 	FLoggername
 )
+
+// ContainFlag check if flags contains in sourceFlags
+func ContainFlag(sourceFlag, flag int) bool {
+	return sourceFlag&flag != 0
+}

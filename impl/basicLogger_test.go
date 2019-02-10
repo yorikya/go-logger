@@ -5,6 +5,7 @@ import (
 	"os"
 	"testing"
 
+	"github.com/yorikya/go-logger/flags"
 	"github.com/yorikya/go-logger/level"
 )
 
@@ -52,17 +53,35 @@ func (c *stdoutCapture) close() {
 	os.Stdout = c.origStdout
 }
 
-func testOutput(out string, lvl level.Level, flags int) {
+func testOutput(t *testing.T, out string, lvl level.Level, loggerFlags int, withLevel bool) {
+	if flags.ContainFlag(loggerFlags, flags.Ftimestamp) {
+		// enc.appendElement(evt.GetTimestamp().Format(enc.timeFormat))
+	}
 
+	if withLevel {
+		// enc.appendElement(evt.GetLevel().String())
+	}
+
+	if flags.ContainFlag(loggerFlags, flags.Fcaller) {
+		getCaller(4, flags.ContainFlag(loggerFlags, flags.FshortFile))
+		// enc.appendElement(evt.GetCaller())
+	}
+
+	if flags.ContainFlag(loggerFlags, flags.FLoggername) {
+		// enc.appendElement(evt.GetLoggerName())
+	}
+
+	//Test message
+	// enc.appendElementVal(evt.GetMessage())
 }
 
 func TestDebug(t *testing.T) {
-	c := newStdoutCapture()
-	defer c.close()
+	// c := newStdoutCapture()
+	flags := FBasicLoggerFlags
+	// defer c.close()
 
-	l := NewConsoleLogger("Test", level.DebugLevel, FBasicLoggerFlags)
+	l := NewConsoleLogger("Test", level.DebugLevel, flags)
 	l.Debug("test message")
 
-	s := c.getString()
-
+	// testOutput(t, c.getString(), level.DebugLevel, flags, true)
 }
