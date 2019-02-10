@@ -12,6 +12,11 @@ import (
 	"github.com/yorikya/go-logger/flags"
 )
 
+const (
+	//NewLine new line string
+	NewLine string = "\n"
+)
+
 //IEncoder interface for encode an incoming event.
 type IEncoder interface {
 	// Encode an incoming event to string and stream to encoder out

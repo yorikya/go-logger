@@ -127,5 +127,7 @@ func (l *BasicLogger) Debugf(format string, vargs ...interface{}) {
 
 // Debugln print message with debug log level, append a new line.
 func (l *BasicLogger) Debugln(msg string) {
-	l.appendLogEvent(level.DebugLevel, fmt.Sprintf(newLine, msg))
+	s := fmt.Sprintf(newLine, msg)
+	println("the line:", s)
+	l.appendLogEvent(level.DebugLevel, s)
 }

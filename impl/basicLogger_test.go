@@ -2,6 +2,7 @@ package impl
 
 import (
 	"bufio"
+	"fmt"
 	"os"
 	"runtime"
 	"strings"
@@ -41,10 +42,10 @@ func newStdoutCapture() *stdoutCapture {
 	go func() {
 		scanner := bufio.NewScanner(readFile)
 		for scanner.Scan() {
-			// if txt := scanner.Text(); txt != "" {
-			// 	c.out <- txt
-			// }
-			c.out <- scanner.Text()
+			msg := scanner.Text()
+			println("The mesager as scaner see:", msg, "contain enter:", strings.Contains(msg, "\n"))
+
+			c.out <- msg
 		}
 	}()
 
@@ -124,7 +125,6 @@ func testOutput(t *testing.T, msg, out string, lvl level.Level, logger *BasicLog
 	if flags.ContainFlag(logger.getFlags(), flags.Fcaller) {
 		caller := cutFirstElement(string(outRune[seek:]))
 		callerLen := len(caller)
-		assertTrue(t, callerLen > 2)
 
 		assertTrue(t, strings.Contains(caller, ".go"))
 
@@ -149,13 +149,38 @@ func testOutput(t *testing.T, msg, out string, lvl level.Level, logger *BasicLog
 }
 
 func TestDebug(t *testing.T) {
-	c := newStdoutCapture()
+	// c := newStdoutCapture()
 	flags := FBasicLoggerFlags
 	msg := "test message"
-	// defer c.close()
 
 	l := NewConsoleLogger("Test", level.DebugLevel, flags)
 	l.Debug(msg)
+
+	// c.close()
+	// testOutput(t, msg, c.getString(), level.DebugLevel, l)
+}
+
+func TestDebugf(t *testing.T) {
+	c := newStdoutCapture()
+	flags := FBasicLoggerFlags
+	msg := "test %s with %d substitutions"
+	firstArg := "mesage"
+	secondArg := 2
+
+	l := NewConsoleLogger("Test", level.DebugLevel, flags)
+	l.Debugf(msg, firstArg, secondArg)
+
+	c.close()
+	testOutput(t, fmt.Sprintf(msg, firstArg, secondArg), c.getString(), level.DebugLevel, l)
+}
+
+func TestDebugln(t *testing.T) {
+	c := newStdoutCapture()
+	flags := FBasicLoggerFlags
+	msg := "test message with new line"
+
+	l := NewConsoleLogger("Test", level.DebugLevel, flags)
+	l.Debugln(msg)
 
 	c.close()
 	testOutput(t, msg, c.getString(), level.DebugLevel, l)
