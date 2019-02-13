@@ -115,19 +115,105 @@ func (l *BasicLogger) appendLogEvent(lvl level.Level, msg string) {
 	l.appenders.DoAppendAll(e)
 }
 
-// Debug print message with debug log level
+// Debug print message with Debug log level
 func (l *BasicLogger) Debug(msg string) {
 	l.appendLogEvent(level.DebugLevel, msg)
 }
 
-// Debugf format message fmt.Sprintf style, print to output as with debug level.
+// Debugf format message fmt.Sprintf style, print to output with Debug level.
 func (l *BasicLogger) Debugf(format string, vargs ...interface{}) {
 	l.appendLogEvent(level.DebugLevel, fmt.Sprintf(format, vargs...))
 }
 
-// Debugln print message with debug log level, append a new line.
+// Debugln print message with Debug log level, append a new line.
 func (l *BasicLogger) Debugln(msg string) {
 	s := fmt.Sprintf(newLine, msg)
-	println("the line:", s)
 	l.appendLogEvent(level.DebugLevel, s)
+}
+
+// Info print message with Info log level
+func (l *BasicLogger) Info(msg string) {
+	l.appendLogEvent(level.InfoLevel, msg)
+}
+
+// Infof format message fmt.Sprintf style, print to output with Info level.
+func (l *BasicLogger) Infof(format string, vargs ...interface{}) {
+	l.appendLogEvent(level.InfoLevel, fmt.Sprintf(format, vargs...))
+}
+
+// Infoln print message with Info log level, append a new line.
+func (l *BasicLogger) Infoln(msg string) {
+	s := fmt.Sprintf(newLine, msg)
+	l.appendLogEvent(level.InfoLevel, s)
+}
+
+// Warn print message with Warn log level
+func (l *BasicLogger) Warn(msg string) {
+	l.appendLogEvent(level.WarnLevel, msg)
+}
+
+// Warnf format message fmt.Sprintf style, print to output with Warn level.
+func (l *BasicLogger) Warnf(format string, vargs ...interface{}) {
+	l.appendLogEvent(level.WarnLevel, fmt.Sprintf(format, vargs...))
+}
+
+// Warnln print message with Warn log level, append a new line.
+func (l *BasicLogger) Warnln(msg string) {
+	s := fmt.Sprintf(newLine, msg)
+	l.appendLogEvent(level.DebugLevel, s)
+}
+
+// Error print message with Error log level
+func (l *BasicLogger) Error(msg string) {
+	l.appendLogEvent(level.ErrorLevel, msg)
+}
+
+// Errorf format message fmt.Sprintf style, print to output with Error level.
+func (l *BasicLogger) Errorf(format string, vargs ...interface{}) {
+	l.appendLogEvent(level.ErrorLevel, fmt.Sprintf(format, vargs...))
+}
+
+// Errorln print message with Error log level, append a new line.
+func (l *BasicLogger) Errorln(msg string) {
+	s := fmt.Sprintf(newLine, msg)
+	l.appendLogEvent(level.ErrorLevel, s)
+}
+
+// Panic print message with Panic log level, call panic
+func (l *BasicLogger) Panic(msg string) {
+	l.appendLogEvent(level.PanicLevel, msg)
+	panic(msg)
+}
+
+// Panicf format message fmt.Sprintf style, print to output with Panic level, call panic.
+func (l *BasicLogger) Panicf(format string, vargs ...interface{}) {
+	s := fmt.Sprintf(format, vargs...)
+	l.appendLogEvent(level.PanicLevel, s)
+	panic(s)
+}
+
+// Panicln print message with Panic log level, append a new line, call panic.
+func (l *BasicLogger) Panicln(msg string) {
+	s := fmt.Sprintf(newLine, msg)
+	l.appendLogEvent(level.PanicLevel, s)
+	panic(s)
+}
+
+// Fatal print message with Fatal log level, followed by a call to os.Exit(1).
+func (l *BasicLogger) Fatal(msg string) {
+	l.appendLogEvent(level.FatalLevel, msg)
+	os.Exit(1)
+}
+
+// Fatalf format message fmt.Sprintf style, print to output with Fatal level, followed by a call to os.Exit(1).
+func (l *BasicLogger) Fatalf(format string, vargs ...interface{}) {
+	l.appendLogEvent(level.FatalLevel, fmt.Sprintf(format, vargs...))
+	os.Exit(1)
+}
+
+// Fatalln print message with Fatal log level, append a new line, followed by a call to os.Exit(1).
+func (l *BasicLogger) Fatalln(msg string) {
+	s := fmt.Sprintf(newLine, msg)
+	l.appendLogEvent(level.FatalLevel, s)
+	os.Exit(1)
 }

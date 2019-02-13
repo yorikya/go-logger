@@ -9,6 +9,7 @@ import (
 	"testing"
 	"unicode"
 
+	"github.com/yorikya/go-logger/encoders"
 	"github.com/yorikya/go-logger/flags"
 	"github.com/yorikya/go-logger/level"
 )
@@ -22,6 +23,18 @@ type stdoutCapture struct {
 	writePipe,
 	//origStdout holds original stdout file
 	origStdout *os.File
+}
+
+func ScanCRLF(data []byte, atEOF bool) (advance int, token []byte, err error) {
+	if atEOF && len(data) == 0 {
+		return 0, nil, nil
+	}
+	// If we're at EOF, we have a final, non-terminated line. Return it.
+	if atEOF {
+		return len(data), data, nil
+	}
+	// Request more data.
+	return 0, nil, nil
 }
 
 func newStdoutCapture() *stdoutCapture {
@@ -41,9 +54,10 @@ func newStdoutCapture() *stdoutCapture {
 
 	go func() {
 		scanner := bufio.NewScanner(readFile)
+		scanner.Split(ScanCRLF)
+
 		for scanner.Scan() {
 			msg := scanner.Text()
-			println("The mesager as scaner see:", msg, "contain enter:", strings.Contains(msg, "\n"))
 
 			c.out <- msg
 		}
@@ -149,15 +163,15 @@ func testOutput(t *testing.T, msg, out string, lvl level.Level, logger *BasicLog
 }
 
 func TestDebug(t *testing.T) {
-	// c := newStdoutCapture()
+	c := newStdoutCapture()
 	flags := FBasicLoggerFlags
 	msg := "test message"
 
 	l := NewConsoleLogger("Test", level.DebugLevel, flags)
 	l.Debug(msg)
 
-	// c.close()
-	// testOutput(t, msg, c.getString(), level.DebugLevel, l)
+	c.close()
+	testOutput(t, msg, c.getString(), level.DebugLevel, l)
 }
 
 func TestDebugf(t *testing.T) {
@@ -183,5 +197,5 @@ func TestDebugln(t *testing.T) {
 	l.Debugln(msg)
 
 	c.close()
-	testOutput(t, msg, c.getString(), level.DebugLevel, l)
+	testOutput(t, msg+encoders.NewLine, c.getString(), level.DebugLevel, l)
 }
