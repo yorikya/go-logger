@@ -160,7 +160,7 @@ func (l *BasicLogger) Warnf(format string, vargs ...interface{}) {
 // Warnln print message with Warn log level, append a new line.
 func (l *BasicLogger) Warnln(msg string) {
 	s := fmt.Sprintf(newLine, msg)
-	l.appendLogEvent(level.DebugLevel, s)
+	l.appendLogEvent(level.WarnLevel, s)
 }
 
 // Error print message with Error log level

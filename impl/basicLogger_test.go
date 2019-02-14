@@ -165,7 +165,7 @@ func testOutput(t *testing.T, msg, out string, lvl level.Level, logger *BasicLog
 func TestDebug(t *testing.T) {
 	c := newStdoutCapture()
 	flags := FBasicLoggerFlags
-	msg := "test message"
+	msg := "test Debug message"
 
 	l := NewConsoleLogger("Test", level.DebugLevel, flags)
 	l.Debug(msg)
@@ -177,7 +177,7 @@ func TestDebug(t *testing.T) {
 func TestDebugf(t *testing.T) {
 	c := newStdoutCapture()
 	flags := FBasicLoggerFlags
-	msg := "test %s with %d substitutions"
+	msg := "test Debug %s with %d substitutions"
 	firstArg := "mesage"
 	secondArg := 2
 
@@ -191,11 +191,189 @@ func TestDebugf(t *testing.T) {
 func TestDebugln(t *testing.T) {
 	c := newStdoutCapture()
 	flags := FBasicLoggerFlags
-	msg := "test message with new line"
+	msg := "test Debug message with new line"
 
 	l := NewConsoleLogger("Test", level.DebugLevel, flags)
 	l.Debugln(msg)
 
 	c.close()
 	testOutput(t, msg+encoders.NewLine, c.getString(), level.DebugLevel, l)
+}
+
+func TestInfo(t *testing.T) {
+	c := newStdoutCapture()
+	flags := FBasicLoggerFlags
+	msg := "test Info message"
+
+	l := NewConsoleLogger("Test", level.InfoLevel, flags)
+	l.Info(msg)
+
+	c.close()
+	testOutput(t, msg, c.getString(), level.InfoLevel, l)
+}
+
+func TestInfof(t *testing.T) {
+	c := newStdoutCapture()
+	flags := FBasicLoggerFlags
+	msg := "test Info %s with %d substitutions"
+	firstArg := "mesage"
+	secondArg := 2
+
+	l := NewConsoleLogger("Test", level.InfoLevel, flags)
+	l.Infof(msg, firstArg, secondArg)
+
+	c.close()
+	testOutput(t, fmt.Sprintf(msg, firstArg, secondArg), c.getString(), level.InfoLevel, l)
+}
+
+func TestInfoln(t *testing.T) {
+	c := newStdoutCapture()
+	flags := FBasicLoggerFlags
+	msg := "test Info message with new line"
+
+	l := NewConsoleLogger("Test", level.InfoLevel, flags)
+	l.Infoln(msg)
+
+	c.close()
+	testOutput(t, msg+encoders.NewLine, c.getString(), level.InfoLevel, l)
+}
+
+func TestWarn(t *testing.T) {
+	c := newStdoutCapture()
+	flags := FBasicLoggerFlags
+	msg := "test Warn message"
+
+	l := NewConsoleLogger("Test", level.WarnLevel, flags)
+	l.Warn(msg)
+
+	c.close()
+	testOutput(t, msg, c.getString(), level.WarnLevel, l)
+}
+
+func TestWarnf(t *testing.T) {
+	c := newStdoutCapture()
+	flags := FBasicLoggerFlags
+	msg := "test Warn %s with %d substitutions"
+	firstArg := "mesage"
+	secondArg := 2
+
+	l := NewConsoleLogger("Test", level.WarnLevel, flags)
+	l.Warnf(msg, firstArg, secondArg)
+
+	c.close()
+	testOutput(t, fmt.Sprintf(msg, firstArg, secondArg), c.getString(), level.WarnLevel, l)
+}
+
+func TestWarnln(t *testing.T) {
+	c := newStdoutCapture()
+	flags := FBasicLoggerFlags
+	msg := "test Warn message with new line"
+
+	l := NewConsoleLogger("Test", level.WarnLevel, flags)
+	l.Warnln(msg)
+
+	c.close()
+	testOutput(t, msg+encoders.NewLine, c.getString(), level.WarnLevel, l)
+}
+
+func TestError(t *testing.T) {
+	c := newStdoutCapture()
+	flags := FBasicLoggerFlags
+	msg := "test Error message"
+
+	l := NewConsoleLogger("Test", level.ErrorLevel, flags)
+	l.Error(msg)
+
+	c.close()
+	testOutput(t, msg, c.getString(), level.ErrorLevel, l)
+}
+
+func TestErrorf(t *testing.T) {
+	c := newStdoutCapture()
+	flags := FBasicLoggerFlags
+	msg := "test Error %s with %d substitutions"
+	firstArg := "mesage"
+	secondArg := 2
+
+	l := NewConsoleLogger("Test", level.ErrorLevel, flags)
+	l.Errorf(msg, firstArg, secondArg)
+
+	c.close()
+	testOutput(t, fmt.Sprintf(msg, firstArg, secondArg), c.getString(), level.ErrorLevel, l)
+}
+
+func TestErrorln(t *testing.T) {
+	c := newStdoutCapture()
+	flags := FBasicLoggerFlags
+	msg := "test Error message with new line"
+
+	l := NewConsoleLogger("Test", level.ErrorLevel, flags)
+	l.Errorln(msg)
+
+	c.close()
+	testOutput(t, msg+encoders.NewLine, c.getString(), level.ErrorLevel, l)
+}
+
+func TestPanic(t *testing.T) {
+	c := newStdoutCapture()
+	flags := FBasicLoggerFlags
+	msg := "test Panic message"
+	l := NewConsoleLogger("Test", level.PanicLevel, flags)
+
+	defer func() {
+		if r := recover(); r != nil {
+			c.close()
+			testOutput(t, msg, c.getString(), level.PanicLevel, l)
+
+			return
+		}
+		t.Error("not panic mode")
+	}()
+
+	l.Panic(msg)
+
+	// TODO: add recovery code
+
+}
+
+func TestPanicf(t *testing.T) {
+	c := newStdoutCapture()
+	flags := FBasicLoggerFlags
+	msg := "test Panic %s with %d substitutions"
+	firstArg := "mesage"
+	secondArg := 2
+
+	l := NewConsoleLogger("Test", level.PanicLevel, flags)
+
+	defer func() {
+		if r := recover(); r != nil {
+			c.close()
+			testOutput(t, fmt.Sprintf(msg, firstArg, secondArg), c.getString(), level.PanicLevel, l)
+
+			return
+		}
+		t.Error("not panic mode")
+	}()
+
+	l.Panicf(msg, firstArg, secondArg)
+
+}
+
+func TestPanicln(t *testing.T) {
+	c := newStdoutCapture()
+	flags := FBasicLoggerFlags
+	msg := "test Panic message with new line"
+
+	l := NewConsoleLogger("Test", level.PanicLevel, flags)
+	defer func() {
+		if r := recover(); r != nil {
+			c.close()
+			testOutput(t, msg+encoders.NewLine, c.getString(), level.PanicLevel, l)
+
+			return
+		}
+		t.Error("not panic mode")
+	}()
+
+	l.Panicln(msg)
 }
