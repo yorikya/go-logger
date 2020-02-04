@@ -3,7 +3,7 @@
 This project ispired by Java [Logback](http://logback.qos.ch/) implementation, which is implements [slf4j](http://www.slf4j.org/) interface for logger.
 
 go-logger introduces a few simple interfaces in which composition creates a logger.
-This library also includes an implementation for a basic logger that stram messages to the `stdout`
+This library also includes an implementation for a basic logger that stream messages to the `stdout`
 
 ***Note: This very begin of a project so it has the basic logger only, a contribution is welcome! 
 
